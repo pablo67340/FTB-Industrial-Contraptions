@@ -10,15 +10,16 @@ import dev.ftb.mods.ftbic.util.OpenMenuFactory;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
@@ -49,7 +50,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -57,7 +57,7 @@ public class ElectricBlockEntity extends BlockEntity implements EnergyHandler, I
 	private static final AtomicLong ELECTRIC_NETWORK_CHANGES = new AtomicLong(0L);
 
 	public static void electricNetworkUpdated(LevelAccessor level, BlockPos pos) {
-		// TODO: Possibly implement some kind of localized network change counter. But for now, this works
+		// TODO: Possibly implement some kind of localized network change counter. But for now, this works 
 		ELECTRIC_NETWORK_CHANGES.incrementAndGet();
 	}
 
@@ -93,7 +93,7 @@ public class ElectricBlockEntity extends BlockEntity implements EnergyHandler, I
 		Arrays.fill(outputItems, ItemStack.EMPTY);
 
 		if (inputItems.length + outputItems.length > 127) {
-			throw new RuntimeException("Internal inventory of " + getType().getRegistryName() + " too large!");
+			throw new RuntimeException("Internal inventory of " + Registry.BLOCK_ENTITY_TYPE.getKey(getType()) + " too large!");
 		}
 
 		thisOptional = null;
@@ -309,7 +309,7 @@ public class ElectricBlockEntity extends BlockEntity implements EnergyHandler, I
 	}
 
 	public void openMenu(ServerPlayer player, OpenMenuFactory openMenuFactory) {
-		NetworkHooks.openGui(player, new MenuProvider() {
+		NetworkHooks.openScreen(player, new MenuProvider() {
 			@Override
 			public Component getDisplayName() {
 				return createDisplayName();
@@ -323,7 +323,7 @@ public class ElectricBlockEntity extends BlockEntity implements EnergyHandler, I
 	}
 
 	public Component createDisplayName() {
-		return new TranslatableComponent(getBlockState().getBlock().getDescriptionId());
+		return Component.translatable(getBlockState().getBlock().getDescriptionId());
 	}
 
 	public void writeMenu(ServerPlayer player, FriendlyByteBuf buf) {
@@ -605,8 +605,8 @@ public class ElectricBlockEntity extends BlockEntity implements EnergyHandler, I
 	}
 
 	public void initProperties() {
-		energyCapacity = electricBlockInstance.energyCapacity;
-		maxInputEnergy = electricBlockInstance.maxEnergyInput;
+		energyCapacity = electricBlockInstance.energyCapacity.get();
+		maxInputEnergy = electricBlockInstance.maxEnergyInput.get();
 		autoEject = false;
 	}
 
@@ -617,7 +617,7 @@ public class ElectricBlockEntity extends BlockEntity implements EnergyHandler, I
 	}
 
 	public double getTotalPossibleEnergyCapacity() {
-		return electricBlockInstance.energyCapacity;
+		return electricBlockInstance.energyCapacity.get();
 	}
 
 	public void addSyncData(SyncedData data) {
@@ -657,7 +657,7 @@ public class ElectricBlockEntity extends BlockEntity implements EnergyHandler, I
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	public void spawnActiveParticles(Level level, double x, double y, double z, BlockState state, Random r) {
+	public void spawnActiveParticles(Level level, double x, double y, double z, BlockState state, RandomSource r) {
 	}
 
 	public Direction getFacing(Direction def) {
@@ -703,4 +703,5 @@ public class ElectricBlockEntity extends BlockEntity implements EnergyHandler, I
 	public static <T extends BlockEntity> void ticker(Level level, BlockPos pos, BlockState state, T entity) {
 		((ElectricBlockEntity) entity).tick();
 	}
+
 }

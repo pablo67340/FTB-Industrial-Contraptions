@@ -2,10 +2,10 @@
   "type": "ftbic:extruding",
   "inputItems": [
     {
+      "count": 4,
       "ingredient": {
         "tag": "forge:plates/aluminum"
-      },
-      "count": 4
+      }
     }
   ],
   "outputItems": [

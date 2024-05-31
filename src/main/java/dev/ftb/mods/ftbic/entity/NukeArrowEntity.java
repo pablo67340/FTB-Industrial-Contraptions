@@ -3,14 +3,9 @@ package dev.ftb.mods.ftbic.entity;
 import dev.ftb.mods.ftbic.FTBICConfig;
 import dev.ftb.mods.ftbic.item.FTBICItems;
 import dev.ftb.mods.ftbic.util.NuclearExplosion;
-import net.minecraft.Util;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -20,7 +15,6 @@ import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.EntityHitResult;
 import net.minecraftforge.network.NetworkHooks;
 
 import java.util.UUID;
@@ -51,24 +45,14 @@ public class NukeArrowEntity extends AbstractArrow {
 	@Override
 	protected void onHitBlock(BlockHitResult hit) {
 		super.onHitBlock(hit);
-		launchNuke(hit.getBlockPos(), hit.getDirection());
-		kill();
-	}
-
-	@Override
-	protected void onHitEntity(EntityHitResult result) {
-		super.onHitEntity(result);
-		launchNuke(result.getEntity().getOnPos(), result.getEntity().getDirection());
-		kill();
-	}
-
-	private void launchNuke(BlockPos pos, Direction direction) {
 		Entity owner = getOwner();
-		if (level instanceof ServerLevel && ownerId != null) {
-			Component ownerName = owner == null ? new TextComponent("Unknown") : owner.getDisplayName();
+		kill();
 
-			NuclearExplosion.builder((ServerLevel) level, pos.relative(direction), FTBICConfig.NUCLEAR.NUKE_RADIUS.get(), ownerId, ownerName.getString())
-					.preExplosion(() -> level.getServer().getPlayerList().broadcastMessage(new TranslatableComponent("block.ftbic.nuke.broadcast", ownerName), ChatType.SYSTEM, Util.NIL_UUID))
+		if (level instanceof ServerLevel && ownerId != null) {
+			Component ownerName = owner == null ? Component.literal("Unknown") : owner.getDisplayName();
+
+			NuclearExplosion.builder((ServerLevel) level, hit.getBlockPos().relative(hit.getDirection()), FTBICConfig.NUCLEAR.NUKE_RADIUS.get(), ownerId, ownerName.getString())
+					.preExplosion(() -> level.getServer().getPlayerList().broadcastSystemMessage(Component.translatable("block.ftbic.nuke.broadcast", ownerName), ChatType.SYSTEM))
 					.create()
 			;
 		}

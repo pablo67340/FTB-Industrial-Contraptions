@@ -47,7 +47,7 @@ public class MechanicalElytraItem extends ArmorItem implements EnergyItemHandler
 
 	@Override
 	public double getEnergyCapacity(ItemStack stack) {
-		return ((EnergyArmorMaterial) material).capacity;
+		return ((EnergyArmorMaterial) material).capacity.get();
 	}
 
 	@Override
@@ -62,7 +62,7 @@ public class MechanicalElytraItem extends ArmorItem implements EnergyItemHandler
 
 	@Override
 	public void fillItemCategory(CreativeModeTab tab, NonNullList<ItemStack> list) {
-		if (allowdedIn(tab)) {
+		if (allowedIn(tab)) {
 			list.add(new ItemStack(this));
 
 			ItemStack full = new ItemStack(this);

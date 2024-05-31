@@ -6,7 +6,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -31,14 +30,14 @@ public abstract class BaseReactorItem extends Item implements ReactorItem {
 	}
 
 	@Override
-	public int getItemStackLimit(ItemStack stack) {
-		return stack.getDamageValue() == 0 ? noDamageStack : super.getItemStackLimit(stack);
+	public int getMaxStackSize(ItemStack stack) {
+		return stack.getDamageValue() == 0 ? noDamageStack : super.getMaxStackSize(stack);
 	}
 
 	@Override
 	@OnlyIn(Dist.CLIENT)
 	public final void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> list, TooltipFlag flag) {
-		list.add(new TextComponent("Nuclear Reactor Component").withStyle(ChatFormatting.DARK_GRAY));
+		list.add(Component.literal("Nuclear Reactor Component").withStyle(ChatFormatting.DARK_GRAY));
 
 		boolean shift = Screen.hasShiftDown();
 

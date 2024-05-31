@@ -21,9 +21,6 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 
@@ -58,19 +55,9 @@ public class MachineRecipeCategory implements IRecipeCategory<MachineRecipe> {
 		return FTBICJEIPlugin.getMachineRecipeType(serializer);
 	}
 
-	@SuppressWarnings("removal")
-	public ResourceLocation getUid() {
-		return getRecipeType().getUid();
-	}
-
-	@SuppressWarnings("removal")
-	public Class<? extends MachineRecipe> getRecipeClass() {
-		return getRecipeType().getRecipeClass();
-	}
-
 	@Override
 	public Component getTitle() {
-		return new TranslatableComponent(Util.makeDescriptionId("recipe", getRecipeType().getUid()));
+		return serializer.getDescriptionId();
 	}
 
 	@Override
@@ -107,7 +94,7 @@ public class MachineRecipeCategory implements IRecipeCategory<MachineRecipe> {
 
 		for (int i = 0; i < recipe.inputItems.size(); i++) {
 			var input = recipe.inputItems.get(i);
-			var slot = builder.addSlot(RecipeIngredientRole.INPUT, 1 + (i + recipe.inputFluids.size()) * 18, 1);
+			var slot = builder.addSlot(RecipeIngredientRole.INPUT, 1+(i + recipe.inputFluids.size()) * 18, 1);
 			for (var stack : input.ingredient.getItems()) {
 				slot.addIngredient(VanillaTypes.ITEM_STACK, Util.make(stack.copy(), s -> s.setCount(input.count)));
 			}
@@ -126,7 +113,7 @@ public class MachineRecipeCategory implements IRecipeCategory<MachineRecipe> {
 						var chance = output.chance;
 						if (chance < 1D) {
 							String s = String.valueOf(chance * 100D);
-							tooltip.add(new TextComponent("Chance: ").append(new TextComponent((s.endsWith(".0") ? s.substring(0, s.length() - 2) : s) + "%")
+							tooltip.add(Component.literal("Chance: ").append(Component.literal((s.endsWith(".0") ? s.substring(0, s.length() - 2) : s) + "%")
 									.withStyle(ChatFormatting.YELLOW)).withStyle(ChatFormatting.GRAY));
 						}
 					});

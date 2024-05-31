@@ -34,7 +34,7 @@ public class FTBICJEIPlugin implements IModPlugin {
 	private static final Map<MachineRecipeSerializer, RecipeType<MachineRecipe>> RECIPE_TYPES = new HashMap<>();
 
 	public static RecipeType<MachineRecipe> getMachineRecipeType(MachineRecipeSerializer serializer) {
-		return RECIPE_TYPES.computeIfAbsent(serializer, key -> new RecipeType<>(key.getRegistryName(), MachineRecipe.class));
+		return RECIPE_TYPES.computeIfAbsent(serializer, key -> new RecipeType<>(key.getId(), MachineRecipe.class));
 	}
 
 	@Override

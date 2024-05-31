@@ -9,12 +9,11 @@ import dev.ftb.mods.ftblibrary.snbt.config.SNBTConfig;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.fluids.FluidAttributes;
+import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.tags.ITag;
 import org.jetbrains.annotations.Nullable;
@@ -28,8 +27,8 @@ import java.util.Map;
 public class FTBICConfig {
 	public static SNBTConfig CONFIG = SNBTConfig.create(FTBIC.MOD_ID).comment("FTB Industrial Contraptions config file");
 
-	public static Component ENERGY_FORMAT = new TextComponent("⚡").withStyle(ChatFormatting.BOLD);
-	public static Component HEAT_FORMAT = new TextComponent("\uD83D\uDD25");
+	public static Component ENERGY_FORMAT = Component.literal("⚡").withStyle(ChatFormatting.BOLD);
+	public static Component HEAT_FORMAT = Component.literal("\uD83D\uDD25");
 
 	public static final Energy ENERGY;
 	public static final Machines MACHINES;
@@ -47,7 +46,7 @@ public class FTBICConfig {
 
 
 	public static final class Equipment {
-		private static final SNBTConfig EQUIPMENT = CONFIG.getGroup("Equipment");
+		private static SNBTConfig EQUIPMENT = CONFIG.getGroup("Equipment");
 
 		public final DoubleValue CARBON_ARMOR_CAPACITY;
 		public final DoubleValue QUANTUM_ARMOR_CAPACITY;
@@ -122,8 +121,6 @@ public class FTBICConfig {
 		public final DoubleValue WIND_MILL_CAPACITY;
 		public final DoubleValue WIND_MILL_MIN_OUTPUT;
 		public final DoubleValue WIND_MILL_MAX_OUTPUT;
-
-		public final DoubleValue NUCLEAR_GENERATOR_OUTPUT;
 		public final IntValue WIND_MILL_MIN_Y;
 		public final IntValue WIND_MILL_MAX_Y;
 		public final DoubleValue WIND_MILL_RAIN_MODIFIER;
@@ -214,7 +211,6 @@ public class FTBICConfig {
 			HV_SOLAR_PANEL_CAPACITY = MACHINES.getDouble("Hv solar panel capacity", 3840D, 1D, 100_000D).comment("Amount of energy stored inm the Hv solar panel");
 			EV_SOLAR_PANEL_CAPACITY = MACHINES.getDouble("Ev solar panel capacity", 30720D, 1D, 100_000D).comment("Amount of energy stored in the Ev solar panel");
 			NUCLEAR_REACTOR_CAPACITY = MACHINES.getDouble("Nuclear reactor capacity", 50_000D, 1D, 100_000D).comment("Amount of energy stored in the Nuclear Reactor");
-			NUCLEAR_GENERATOR_OUTPUT = MACHINES.getDouble("Nuclear Reactor output multiplier", 1D,.1D,100).comment("Energy or Steam multiplier for Nuclear Reactor Output");
 			MACHINE_RECIPE_BASE_TICKS = MACHINES.getDouble("Machine recipe base ticks", 200D, 1D, 100_000D).comment("Base lengths in ticks a machine takes to process a recipe");
 			POWERED_FURNACE_CAPACITY = MACHINES.getDouble("Powered furnace capacity", 1_200D, 1D, 100_000D).comment("Amount of energy stored in the Powered Furnace");
 			POWERED_FURNACE_USE = MACHINES.getDouble("Powered furnace use", 3D, 0D, 100_000D).comment("Energy usage per operation of the powered furnace");
@@ -232,7 +228,7 @@ public class FTBICConfig {
 			ROLLER_USE = MACHINES.getDouble("Roller use", 3D, 0D, 100_000D).comment("Energy usage of the Roller");
 			EXTRUDER_CAPACITY = MACHINES.getDouble("Extruder capacity", 1_200D, 1D, 100_000D).comment("Amount of energy stored in the Extruder");
 			EXTRUDER_USE = MACHINES.getDouble("Extruder use", 3D, 0D, 100_000D).comment("Energy usage of the Extruder");
-			ANTIMATTER_CONSTRUCTOR_CAPACITY = MACHINES.getDouble("Antimatter constructor capacity", 1_000_000D, 1D, 1_000_000D).comment("Amount of energy stored in the Antimatter Constructor");
+			ANTIMATTER_CONSTRUCTOR_CAPACITY = MACHINES.getDouble("Antimatter constructor capacity", 1_000_000D, 1D, 100_000D).comment("Amount of energy stored in the Antimatter Constructor");
 			ANTIMATTER_CONSTRUCTOR_BOOST = MACHINES.getDouble("Antimatter constructor boost", 6D, 1D, 100_000D).comment("Construction boost multiplier");
 			ADVANCED_POWERED_FURNACE_CAPACITY = MACHINES.getDouble("Advanced powered furnace capacity", 10_000D, 1D, 100_000D).comment("Amount of energy stored in the Advanced Powered Furnace");
 			ADVANCED_POWERED_FURNACE_USE = MACHINES.getDouble("Advanced powered furnace use", 16D, 0D, 100_000D).comment("Energy usage of the Advanced powered furnace");
@@ -260,7 +256,7 @@ public class FTBICConfig {
 			PUMP_MINE_TICKS = MACHINES.getLong("Pump mine ticks", 40L, 0L, 100_000L).comment("Duration taken to mine a fluid using the pump");
 			PUMP_MOVE_TICKS = MACHINES.getLong("Pump move ticks", 10L, 0L, 100_000L).comment("Duration taken to move the pump to a new location");
 			PUMP_REPLACE_FLUID_EXFLUID = MACHINES.getBoolean("Pump replace fluid with exfluid", true).comment("Whether fluid sources are replaced with exfluid on pump");
-			PUMP_TANK_CAPACITY = MACHINES.getInt("Pump tank capacity", FluidAttributes.BUCKET_VOLUME * 128, 1, 100_000).comment("Amount of energy stored in the Pump Tank");
+			PUMP_TANK_CAPACITY = MACHINES.getInt("Pump tank capacity", FluidType.BUCKET_VOLUME * 128, 1, 100_000).comment("Amount of energy stored in the Pump Tank");
 			ITEM_TRANSFER_EFFICIENCY = MACHINES.getDouble("Item transfer efficiency", 20.0D, 0D, Double.POSITIVE_INFINITY).comment("Determines how effective an item can transport energy to something else");
 			STATE_UPDATE_TICKS = MACHINES.getInt("State update ticks", 6, 1, 1_000).comment("To reduce lag, we only update a state of a block every X ticks. This controls how many ticks we wait to update the blocks state.");
 			UPGRADE_LIMIT_PER_SLOT = MACHINES.getInt("Upgrade limit per slot", 4, 1, 64).comment("Amount of upgrades allowed in each slot of a machine");
@@ -287,7 +283,7 @@ public class FTBICConfig {
 			NUCLEAR_REACTOR_EXPLOSION_BASE_RADIUS = NUCLEAR.getDouble("Base Nuclear blast radius", 10D, 1D, 1_000D).comment("The starting radius for a nuclear reactor explosion");
 			NUCLEAR_REACTOR_EXPLOSION_MULTIPLIER = NUCLEAR.getDouble("Nuclear blast radius multiplier", 0.5D, 0.001D, 100D).comment("How much to multiple the above base radius of the explosion");
 			NUCLEAR_REACTOR_EXPLOSION_LIMIT = NUCLEAR.getDouble("Nuclear blast limit", 80D, 1D, 10_000D).comment("The limit of how large an explosion can be");
-			FLUID_CELL_CAPACITY = NUCLEAR.getInt("Fluid cell capacity", FluidAttributes.BUCKET_VOLUME, 1, 100_000).comment("How much fluid a fluid cell can contain");
+			FLUID_CELL_CAPACITY = NUCLEAR.getInt("Fluid cell capacity", FluidType.BUCKET_VOLUME, 1, 100_000).comment("How much fluid a fluid cell can contain");
 			ADD_ALL_FLUID_CELLS = NUCLEAR.getBoolean("Add all fluid cells", false).comment("Add all fluid cells to creative tab");
 			NUCLEAR_EXPLOSION_DAEMON_THREAD = NUCLEAR.getBoolean("Explosion uses deamon thread", false).comment("Spawn a deamon thread to handle the explosion calculation (experimental)");
 		}

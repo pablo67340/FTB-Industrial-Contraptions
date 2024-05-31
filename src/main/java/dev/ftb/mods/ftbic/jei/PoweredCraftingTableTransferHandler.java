@@ -31,16 +31,14 @@ public class PoweredCraftingTableTransferHandler implements IRecipeTransferHandl
 		return PoweredCraftingTableMenu.class;
 	}
 
+	@Override
 	public Optional<MenuType<PoweredCraftingTableMenu>> getMenuType() {
 		return Optional.of(FTBICMenus.POWERED_CRAFTING_TABLE.get());
 	}
 
+	@Override
 	public mezz.jei.api.recipe.RecipeType<CraftingRecipe> getRecipeType() {
 		return RecipeTypes.CRAFTING;
-	}
-
-	public Class<CraftingRecipe> getRecipeClass() {
-		return CraftingRecipe.class;
 	}
 
 	@Nullable

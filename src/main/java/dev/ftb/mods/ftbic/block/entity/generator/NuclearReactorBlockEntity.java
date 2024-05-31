@@ -16,18 +16,18 @@ import it.unimi.dsi.fastutil.bytes.Byte2ObjectMap;
 import it.unimi.dsi.fastutil.bytes.Byte2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.bytes.ByteArrayList;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.ChatType;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -44,14 +44,12 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 public class NuclearReactorBlockEntity extends GeneratorBlockEntity {
 	public static final int[] OFFSET_X = {0, 0, -1, 1};
 	public static final int[] OFFSET_Y = {-1, 1, 0, 0};
 
 	public static final SyncedDataKey<Double> ENERGY_OUTPUT = new SyncedDataKey<>("energy_output", 0D);
-	public double ENERGY_MULTIPLIER = FTBICConfig.MACHINES.NUCLEAR_GENERATOR_OUTPUT.get();
 	public static final SyncedDataKey<Integer> HEAT = new SyncedDataKey<>("heat", 0);
 	public static final SyncedDataKey<Integer> MAX_HEAT = new SyncedDataKey<>("max_heat", 0);
 
@@ -94,7 +92,7 @@ public class NuclearReactorBlockEntity extends GeneratorBlockEntity {
 			CompoundTag ptag = new CompoundTag();
 
 			for (Map.Entry<Item, ByteArrayList> entry : pmap.entrySet()) {
-				ptag.putByteArray(entry.getKey().getRegistryName().toString(), entry.getValue().toByteArray());
+				ptag.putByteArray(Registry.ITEM.getKey(entry.getKey()).toString(), entry.getValue().toByteArray());
 			}
 
 			tag.put("Plan", ptag);
@@ -154,7 +152,7 @@ public class NuclearReactorBlockEntity extends GeneratorBlockEntity {
 		super.addSyncData(data);
 		data.addBoolean(SyncedData.PAUSED, () -> reactor.paused);
 		data.addBoolean(SyncedData.ALLOW_REDSTONE_CONTROL, () -> reactor.allowRedstoneControl);
-		data.addDouble(ENERGY_OUTPUT, () -> (reactor.energyOutput * ENERGY_MULTIPLIER));
+		data.addDouble(ENERGY_OUTPUT, () -> reactor.energyOutput);
 		data.addInt(HEAT, () -> reactor.heat);
 		data.addInt(MAX_HEAT, () -> reactor.maxHeat);
 	}
@@ -195,7 +193,6 @@ public class NuclearReactorBlockEntity extends GeneratorBlockEntity {
 		if (reactor.energyOutput > 0) {
 			active = true;
 			energy += Math.min(reactor.energyOutput, energyCapacity - energy);
-			energy *= ENERGY_MULTIPLIER;
 		}
 
 		if (level != null) {
@@ -210,10 +207,10 @@ public class NuclearReactorBlockEntity extends GeneratorBlockEntity {
 
 		if (h >= 1F) {
 			if (debugSpeed > 0) {
-				level.getServer().getPlayerList().broadcastMessage(new TextComponent(String.format("Debug Nuclear Reactor at %d, %d, %d exploded:", worldPosition.getX(), worldPosition.getY(), worldPosition.getZ())), ChatType.SYSTEM, Util.NIL_UUID);
-				level.getServer().getPlayerList().broadcastMessage(new TextComponent(String.format("- Radius: %,d", Mth.ceil(reactor.explosionRadius))), ChatType.SYSTEM, Util.NIL_UUID);
-				level.getServer().getPlayerList().broadcastMessage(new TextComponent(String.format("- Heat: %s / %s \uD83D\uDD25", FTBICUtils.formatEnergyValue(reactor.heat), FTBICUtils.formatEnergyValue(reactor.maxHeat))), ChatType.SYSTEM, Util.NIL_UUID);
-				level.getServer().getPlayerList().broadcastMessage(new TextComponent(String.format("- Energy: %s/t", FTBICUtils.formatEnergyValue(reactor.energyOutput))), ChatType.SYSTEM, Util.NIL_UUID);
+				level.getServer().getPlayerList().broadcastSystemMessage(Component.literal(String.format("Debug Nuclear Reactor at %d, %d, %d exploded:", worldPosition.getX(), worldPosition.getY(), worldPosition.getZ())), ChatType.SYSTEM);
+				level.getServer().getPlayerList().broadcastSystemMessage(Component.literal(String.format("- Radius: %,d", Mth.ceil(reactor.explosionRadius))), ChatType.SYSTEM);
+				level.getServer().getPlayerList().broadcastSystemMessage(Component.literal(String.format("- Heat: %s / %s \uD83D\uDD25", FTBICUtils.formatEnergyValue(reactor.heat), FTBICUtils.formatEnergyValue(reactor.maxHeat))), ChatType.SYSTEM);
+				level.getServer().getPlayerList().broadcastSystemMessage(Component.literal(String.format("- Energy: %s/t", FTBICUtils.formatEnergyValue(reactor.energyOutput))), ChatType.SYSTEM);
 
 				reactor.paused = true;
 				reactor.heat = reactor.maxHeat - 1;
@@ -232,12 +229,12 @@ public class NuclearReactorBlockEntity extends GeneratorBlockEntity {
 
 				NuclearExplosion.builder((ServerLevel) level, worldPosition, reactor.explosionRadius, placerId, placerName)
 						.preExplosion(() -> {
-							level.getServer().getPlayerList().broadcastMessage(new TranslatableComponent("block.ftbic.nuclear_reactor.broadcast", placerName), ChatType.SYSTEM, Util.NIL_UUID);
+							level.getServer().getPlayerList().broadcastSystemMessage(Component.translatable("block.ftbic.nuclear_reactor.broadcast", placerName), ChatType.SYSTEM);
 
 							Player player = level.getServer().getPlayerList().getPlayer(placerId);
 
 							if (player != null) {
-								player.sendMessage(new TextComponent(String.format("%s : [%d, %d, %d]", level.dimension().location(), worldPosition.getX(), worldPosition.getY(), worldPosition.getZ())).withStyle(ChatFormatting.GRAY), Util.NIL_UUID);
+								player.sendSystemMessage(Component.literal(String.format("%s : [%d, %d, %d]", level.dimension().location(), worldPosition.getX(), worldPosition.getY(), worldPosition.getZ())).withStyle(ChatFormatting.GRAY));
 							}
 
 							level.removeBlock(worldPosition, false);
@@ -276,6 +273,6 @@ public class NuclearReactorBlockEntity extends GeneratorBlockEntity {
 
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public void spawnActiveParticles(Level level, double x, double y, double z, BlockState state, Random r) {
+	public void spawnActiveParticles(Level level, double x, double y, double z, BlockState state, RandomSource r) {
 	}
 }

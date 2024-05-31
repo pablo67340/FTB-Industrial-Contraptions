@@ -16,6 +16,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,7 +40,7 @@ public class GeothermalGeneratorBlockEntity extends GeneratorBlockEntity {
 		fluidAmount = tag.getInt("FluidAmount");
 	}
 
-	public LazyOptional<GeothermalGeneratorTank> getTankOptional() {
+	public LazyOptional<?> getTankOptional() {
 		if (tankOptional == null) {
 			tankOptional = LazyOptional.of(() -> new GeothermalGeneratorTank(this));
 		}
@@ -73,7 +74,7 @@ public class GeothermalGeneratorBlockEntity extends GeneratorBlockEntity {
 
 	@Override
 	public InteractionResult rightClick(Player player, InteractionHand hand, BlockHitResult hit) {
-		if (FluidUtil.interactWithFluidHandler(player, hand, getTankOptional().orElse(null))) {
+		if (FluidUtil.interactWithFluidHandler(player, hand, (IFluidHandler) getTankOptional().orElse(null))) {
 			return InteractionResult.SUCCESS;
 		} else if (!level.isClientSide()) {
 			openMenu((ServerPlayer) player, (id, inventory) -> new GeothermalGeneratorMenu(id, inventory, this));

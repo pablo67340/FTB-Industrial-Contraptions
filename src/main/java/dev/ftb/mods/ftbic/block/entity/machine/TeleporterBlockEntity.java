@@ -11,7 +11,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -165,7 +165,7 @@ public class TeleporterBlockEntity extends ElectricBlockEntity {
 				}
 			}
 		} else {
-			player.displayClientMessage(new TranslatableComponent("block.ftbic.teleporter.load_error").withStyle(ChatFormatting.RED), true);
+			player.displayClientMessage(Component.translatable("block.ftbic.teleporter.load_error").withStyle(ChatFormatting.RED), true);
 		}
 	}
 
@@ -193,7 +193,7 @@ public class TeleporterBlockEntity extends ElectricBlockEntity {
 				// TODO: add gui here
 				// open gui
 			} else {
-				player.displayClientMessage(new TranslatableComponent("block.ftbic.teleporter.perm_error").withStyle(ChatFormatting.RED), true);
+				player.displayClientMessage(Component.translatable("block.ftbic.teleporter.perm_error").withStyle(ChatFormatting.RED), true);
 			}
 		}
 
@@ -259,13 +259,13 @@ public class TeleporterBlockEntity extends ElectricBlockEntity {
 						syncBlock();
 					}
 				} else {
-					player.displayClientMessage(new TranslatableComponent("block.ftbic.teleporter.load_error").withStyle(ChatFormatting.RED), true);
+					player.displayClientMessage(Component.translatable("block.ftbic.teleporter.load_error").withStyle(ChatFormatting.RED), true);
 				}
 			} else {
-				player.displayClientMessage(new TranslatableComponent("block.ftbic.teleporter.load_error").withStyle(ChatFormatting.RED), true);
+				player.displayClientMessage(Component.translatable("block.ftbic.teleporter.load_error").withStyle(ChatFormatting.RED), true);
 			}
 		} else {
-			player.displayClientMessage(new TranslatableComponent("block.ftbic.teleporter.perm_error").withStyle(ChatFormatting.RED), true);
+			player.displayClientMessage(Component.translatable("block.ftbic.teleporter.perm_error").withStyle(ChatFormatting.RED), true);
 		}
 	}
 }

@@ -1,5 +1,6 @@
 package dev.ftb.mods.ftbic.item;
 
+import dev.architectury.hooks.fluid.FluidStackHooks;
 import dev.ftb.mods.ftbic.FTBIC;
 import dev.ftb.mods.ftbic.FTBICConfig;
 import net.minecraft.ChatFormatting;
@@ -7,10 +8,9 @@ import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -50,12 +50,13 @@ public class FluidCellItem extends Item {
 	}
 
 	@Override
-	public boolean hasContainerItem(ItemStack stack) {
+	public boolean hasCraftingRemainingItem(ItemStack stack) {
 		return getFluid(stack) != Fluids.EMPTY;
 	}
 
+	@Nullable
 	@Override
-	public ItemStack getContainerItem(ItemStack stack) {
+	public ItemStack getCraftingRemainingItem(ItemStack stack) {
 		Fluid fluid = getFluid(stack);
 		if (fluid != Fluids.EMPTY) {
 			return new ItemStack(this);
@@ -114,11 +115,11 @@ public class FluidCellItem extends Item {
 
 	@Override
 	public void fillItemCategory(CreativeModeTab tab, NonNullList<ItemStack> list) {
-		if (allowdedIn(tab)) {
+		if (allowedIn(tab)) {
 			list.add(new ItemStack(this));
 
 			for (Fluid fluid : ForgeRegistries.FLUIDS) {
-				if (fluid != Fluids.EMPTY && fluid.isSource(fluid.defaultFluidState()) && (FTBICConfig.NUCLEAR.ADD_ALL_FLUID_CELLS.get() || !fluid.getRegistryName().getPath().contains("molten"))) {
+				if (fluid != Fluids.EMPTY && fluid.isSource(fluid.defaultFluidState()) && (FTBICConfig.NUCLEAR.ADD_ALL_FLUID_CELLS.get() || !Registry.FLUID.getKey(fluid).getPath().contains("molten"))) {
 					list.add(setFluid(new ItemStack(this), fluid));
 				}
 			}
@@ -131,7 +132,7 @@ public class FluidCellItem extends Item {
 		Fluid fluid = getFluid(stack);
 
 		if (fluid != Fluids.EMPTY) {
-			list.add(new TextComponent("< " + FTBICConfig.NUCLEAR.FLUID_CELL_CAPACITY.get() + " mB of ").append(new TranslatableComponent(fluid.getAttributes().getTranslationKey())).append(" >").withStyle(ChatFormatting.GRAY));
+			list.add(Component.literal("< " + FTBICConfig.NUCLEAR.FLUID_CELL_CAPACITY.get() + " mB of ").append(fluid.getFluidType().getDescription()).append(" >").withStyle(ChatFormatting.GRAY));
 		}
 	}
 
@@ -148,7 +149,7 @@ public class FluidCellItem extends Item {
 			}
 		} else {
 			CompoundTag nbt = stack.getOrCreateTag();
-			nbt.putString(TAG_FLUID, Objects.requireNonNull(fluid.getRegistryName()).toString());
+			nbt.putString(TAG_FLUID, Objects.requireNonNull(Registry.FLUID.getKey(fluid)).toString());
 		}
 
 		return stack;
