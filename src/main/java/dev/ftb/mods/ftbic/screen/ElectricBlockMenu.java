@@ -43,10 +43,6 @@ public class ElectricBlockMenu<E extends ElectricBlockEntity> extends AbstractCo
 		addDataSlots(data);
 	}
 
-	public E getEntity() {
-		return entity;
-	}
-
 	public int getPlayerSlotOffset() {
 		return 84;
 	}

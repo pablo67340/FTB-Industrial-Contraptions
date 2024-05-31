@@ -12,7 +12,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -20,8 +20,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
-import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -59,16 +59,16 @@ public class FTBICUtils {
 		return String.format("%,d", (long) energy);
 	}
 
-	public static TextComponent formatEnergy(double energy) {
-		return (TextComponent) new TextComponent("").append(formatEnergyValue(energy) + " ").append(FTBICConfig.ENERGY_FORMAT);
+	public static MutableComponent formatEnergy(double energy) {
+		return Component.literal("").append(formatEnergyValue(energy) + " ").append(FTBICConfig.ENERGY_FORMAT);
 	}
 
 	public static Component energyTooltip(ItemStack stack, EnergyItemHandler itemHandler) {
-		return new TextComponent("").append(formatEnergy(itemHandler.getEnergy(stack)).withStyle(ChatFormatting.GRAY)).append(" / ").append(formatEnergy(itemHandler.getEnergyCapacity(stack)).withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.DARK_GRAY);
+		return Component.literal("").append(formatEnergy(itemHandler.getEnergy(stack)).withStyle(ChatFormatting.GRAY)).append(" / ").append(formatEnergy(itemHandler.getEnergyCapacity(stack)).withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.DARK_GRAY);
 	}
 
-	public static TextComponent formatHeat(int heat) {
-		return (TextComponent) new TextComponent("").append(String.format("%,d ", heat)).append(FTBICConfig.HEAT_FORMAT);
+	public static Component formatHeat(int heat) {
+		return Component.literal("").append(String.format("%,d ", heat)).append(FTBICConfig.HEAT_FORMAT);
 	}
 
 	public static <T> List<T> listFromJson(JsonObject json, String key, Function<JsonElement, T> function) {
@@ -137,17 +137,17 @@ public class FTBICUtils {
 		} else if (element.isJsonObject()) {
 			JsonObject o = element.getAsJsonObject();
 			Fluid fluid = ForgeRegistries.FLUIDS.getValue(new ResourceLocation(o.get("fluid").getAsString()));
-			int amount = o.has("amount") ? o.get("amount").getAsInt() : FluidAttributes.BUCKET_VOLUME;
+			int amount = o.has("amount") ? o.get("amount").getAsInt() : FluidType.BUCKET_VOLUME;
 			return new FluidStack(fluid, amount);
 		}
 
 		Fluid fluid = ForgeRegistries.FLUIDS.getValue(new ResourceLocation(element.getAsString()));
-		return new FluidStack(fluid, FluidAttributes.BUCKET_VOLUME);
+		return new FluidStack(fluid, FluidType.BUCKET_VOLUME);
 	}
 
 	public static JsonElement fluidToJson(FluidStack stack) {
 		JsonObject json = new JsonObject();
-		json.addProperty("fluid", stack.getFluid().getRegistryName().toString());
+		json.addProperty("fluid", Registry.FLUID.getKey(stack.getFluid()).toString());
 		json.addProperty("amount", stack.getAmount());
 		return json;
 	}

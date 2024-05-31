@@ -1,19 +1,22 @@
 package dev.ftb.mods.ftbic.recipe;
 
 import com.google.gson.JsonObject;
-import dev.ftb.mods.ftbic.FTBIC;
 import dev.ftb.mods.ftbic.util.FTBICUtils;
 import dev.ftb.mods.ftbic.util.IngredientWithCount;
 import dev.ftb.mods.ftbic.util.StackWithChance;
+import net.minecraft.Util;
+import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.registries.ForgeRegistryEntry;
+import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.Nullable;
 
-public class MachineRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<MachineRecipe> {
+public class MachineRecipeSerializer implements RecipeSerializer<MachineRecipe> {
 	public final RecipeType<MachineRecipe> recipeType;
 	public int guiWidth = 82;
 	public int guiHeight = 54;
@@ -28,8 +31,8 @@ public class MachineRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer
 	public int inputSlots = 1;
 	public int outputSlots = 1;
 
-	public MachineRecipeSerializer(String id) {
-		recipeType = RecipeType.register(FTBIC.MOD_ID + ":" + id);
+	public MachineRecipeSerializer(RegistryObject<RecipeType<Recipe<?>>> id) {
+		recipeType = (RecipeType<MachineRecipe>) (Object) id.get();
 	}
 
 	public MachineRecipeSerializer twoInputs() {
@@ -81,5 +84,13 @@ public class MachineRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer
 		FTBICUtils.listToNet(recipe.outputFluids, buf, FluidStack::writeToPacket);
 		buf.writeDouble(recipe.processingTime);
 		buf.writeBoolean(recipe.hideFromJEI);
+	}
+
+	public ResourceLocation getId() {
+		return Registry.RECIPE_SERIALIZER.getKey(this);
+	}
+
+	public Component getDescriptionId() {
+		return Component.translatable(Util.makeDescriptionId("recipe", getId()));
 	}
 }

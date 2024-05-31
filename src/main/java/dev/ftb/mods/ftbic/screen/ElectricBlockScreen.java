@@ -17,10 +17,10 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.Collections;
@@ -63,7 +63,7 @@ public class ElectricBlockScreen<T extends ElectricBlockMenu<?>> extends Abstrac
 //			}
 
 			double energy = menu.data.get(SyncedData.ENERGY);
-			renderTooltip(poseStack, Collections.singletonList(new TextComponent("").append(FTBICUtils.formatEnergy(energy).withStyle(ChatFormatting.GRAY)).append(" / ").append(FTBICUtils.formatEnergy(capacity).withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.DARK_GRAY)), Optional.empty(), mouseX, mouseY);
+			renderTooltip(poseStack, Collections.singletonList(Component.literal("").append(FTBICUtils.formatEnergy(energy).withStyle(ChatFormatting.GRAY)).append(" / ").append(FTBICUtils.formatEnergy(capacity).withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.DARK_GRAY)), Optional.empty(), mouseX, mouseY);
 		}
 	}
 
@@ -157,12 +157,13 @@ public class ElectricBlockScreen<T extends ElectricBlockMenu<?>> extends Abstrac
 		double d = fluid.getAmount() / (double) capacity;
 		int h = Mth.ceil(d * 52);
 		if (h > 0) {
-			TextureAtlasSprite sprite = minecraft.getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(fluid.getFluid().getAttributes().getStillTexture(fluid));
+			var renderProps = IClientFluidTypeExtensions.of(fluid.getFluid().getFluidType());
+			TextureAtlasSprite sprite = minecraft.getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(renderProps.getStillTexture(fluid));
 
-			int color = fluid.getFluid().getAttributes().getColor(fluid);
+			int color = renderProps.getTintColor(fluid);
 			int r = (color >> 16) & 255;
 			int g = (color >> 8) & 255;
-			int b = (color) & 255;
+			int b = (color >> 0) & 255;
 
 			float u0 = sprite.getU0();
 			float v0 = sprite.getV0();
@@ -180,10 +181,8 @@ public class ElectricBlockScreen<T extends ElectricBlockMenu<?>> extends Abstrac
 			lv.vertex(m, x + 17F, y + 53F, 0F).color(r, g, b, 255).uv(u1, v1).endVertex(); // BOTTOM RIGHT
 			lv.vertex(m, x + 17F, y + 53F - h, 0F).color(r, g, b, 255).uv(u1, v0).endVertex(); // TOP RIGHT
 
-			lv.end();
-			BufferUploader.end(lv);
+			BufferUploader.drawWithShader(lv.end());
 		}
-
 
 		RenderSystem.setShaderTexture(0, BASE_TEXTURE);
 		blit(poseStack, x, y, 68, 167, 18, 54);
@@ -195,9 +194,10 @@ public class ElectricBlockScreen<T extends ElectricBlockMenu<?>> extends Abstrac
 		if (!fluid.isEmpty()) {
 			RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
 
-			TextureAtlasSprite sprite = minecraft.getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(fluid.getFluid().getAttributes().getStillTexture(fluid));
+			var renderProps = IClientFluidTypeExtensions.of(fluid.getFluid());
+			TextureAtlasSprite sprite = minecraft.getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(renderProps.getStillTexture(fluid));
 
-			int color = fluid.getFluid().getAttributes().getColor(fluid);
+			int color = renderProps.getTintColor(fluid);
 			int r = (color >> 16) & 255;
 			int g = (color >> 8) & 255;
 			int b = (color >> 0) & 255;
@@ -216,8 +216,7 @@ public class ElectricBlockScreen<T extends ElectricBlockMenu<?>> extends Abstrac
 			lv.vertex(m, x + 1F, y + 17F, 0F).color(r, g, b, 255).uv(u0, v1).endVertex();
 			lv.vertex(m, x + 17F, y + 17F, 0F).color(r, g, b, 255).uv(u1, v1).endVertex();
 			lv.vertex(m, x + 17F, y + 1F, 0F).color(r, g, b, 255).uv(u1, v0).endVertex();
-			lv.end();
-			BufferUploader.end(lv);
+			BufferUploader.drawWithShader(lv.end());
 
 			// FIXME: RenderSystem.enableAlphaTest();
 			RenderSystem.setShaderTexture(0, BASE_TEXTURE);

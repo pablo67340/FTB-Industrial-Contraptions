@@ -1,7 +1,6 @@
 package dev.ftb.mods.ftbic.world;
 
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -12,11 +11,11 @@ import java.util.stream.Collectors;
 import static dev.ftb.mods.ftbic.world.ResourceType.*;
 
 public enum ResourceElements {
-    TIN(Requirements.builder().all().remove(WIRE)),
-    LEAD(Requirements.builder().all().remove(WIRE)),
-    URANIUM(Requirements.builder().all().remove(WIRE)),
-    IRIDIUM(Requirements.builder().all().remove(WIRE)),
-    ALUMINUM,
+	TIN(Requirements.builder().all().remove(WIRE)),
+	LEAD(Requirements.builder().all().remove(WIRE)),
+	URANIUM(Requirements.builder().all().remove(WIRE)),
+	IRIDIUM(Requirements.builder().all().remove(WIRE)),
+	ALUMINUM,
     DEEPSLATE_TIN(Requirements.builder().add(ORE)),
     DEEPSLATE_LEAD(Requirements.builder().add(ORE)),
     DEEPSLATE_URANIUM(Requirements.builder().add(ORE)),
@@ -33,7 +32,7 @@ public enum ResourceElements {
 	COAL(Requirements.builder().add(DUST)),
 	CHARCOAL(Requirements.builder().add(DUST));
 
-    public static final List<ResourceElements> VALUES = Arrays.stream(values()).sorted(Comparator.comparing(ResourceElements::getName)).toList();
+    public static final List<ResourceElements> VALUES = Arrays.asList(values());
 
 	/**
 	 * Creates a map of the resource types which link together the elements that the resource contains.
