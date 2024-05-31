@@ -23,12 +23,13 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.IFluidTank;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -57,7 +58,7 @@ public class PumpBlockEntity extends DiggingBaseBlockEntity implements IFluidHan
 	public void writeData(CompoundTag tag) {
 		super.writeData(tag);
 		tag.put("Fluid", fluidStack.writeToNBT(new CompoundTag()));
-		tag.putString("Filter", Registry.FLUID.getKey(filter).toString());
+		tag.putString("Filter", ForgeRegistries.FLUIDS.getKey(filter).toString());
 	}
 
 	@Override
@@ -78,12 +79,12 @@ public class PumpBlockEntity extends DiggingBaseBlockEntity implements IFluidHan
 	public void writeNetData(CompoundTag tag) {
 		super.writeNetData(tag);
 		tag.put("Fluid", fluidStack.writeToNBT(new CompoundTag()));
-		tag.putString("Filter", Registry.FLUID.getKey(filter).toString());
+		tag.putString("Filter", ForgeRegistries.FLUIDS.getKey(filter).toString());
 	}
 
 	@Override
 	public boolean isValidBlock(BlockState state, BlockPos pos) {
-		return state.getMaterial().isLiquid() && state.getBlock() instanceof BucketPickup && (filter == Fluids.EMPTY || filter.isSame(state.getFluidState().getType())) && state.getFluidState().isSource();
+		return state.liquid() && state.getBlock() instanceof BucketPickup && (filter == Fluids.EMPTY || filter.isSame(state.getFluidState().getType())) && state.getFluidState().isSource();
 	}
 
 	@Override
@@ -113,7 +114,7 @@ public class PumpBlockEntity extends DiggingBaseBlockEntity implements IFluidHan
 
 	@Override
 	public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-		return cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY ? getThisOptional().cast() : super.getCapability(cap, side);
+		return cap == ForgeCapabilities.FLUID_HANDLER ? getThisOptional().cast() : super.getCapability(cap, side);
 	}
 
 	@Override
@@ -133,7 +134,7 @@ public class PumpBlockEntity extends DiggingBaseBlockEntity implements IFluidHan
 	@Override
 	public void writeMenu(ServerPlayer player, FriendlyByteBuf buf) {
 		super.writeMenu(player, buf);
-		buf.writeResourceLocation(Registry.FLUID.getKey(filter));
+		buf.writeResourceLocation(ForgeRegistries.FLUIDS.getKey(filter));
 		fluidStack.writeToPacket(buf);
 	}
 
@@ -231,7 +232,7 @@ public class PumpBlockEntity extends DiggingBaseBlockEntity implements IFluidHan
 	public boolean isItemValid(int slot, @NotNull ItemStack stack) {
 		switch(slot) {
 			case 0:
-				if (stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).isPresent())
+				if (stack.getCapability(ForgeCapabilities.FLUID_HANDLER).isPresent())
 					return true;
 				break;
 			case 1:
@@ -244,8 +245,8 @@ public class PumpBlockEntity extends DiggingBaseBlockEntity implements IFluidHan
 	public void handleProcessing() {
 		super.handleProcessing();
 
-		IFluidHandlerItem iFluidHandlerItemInput = inputItems[0].getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).orElse(null);
-		IFluidHandlerItem iFluidHandlerItemOutput = outputItems[0].getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).orElse(null);
+		IFluidHandlerItem iFluidHandlerItemInput = (IFluidHandlerItem) inputItems[0].getCapability(ForgeCapabilities.FLUID_HANDLER).orElse(null);
+		IFluidHandlerItem iFluidHandlerItemOutput = (IFluidHandlerItem) outputItems[0].getCapability(ForgeCapabilities.FLUID_HANDLER).orElse(null);
 		boolean hasFilledItem = false;
 		if (iFluidHandlerItemInput != null) {
 			int itemCapacityInput = iFluidHandlerItemInput.getTankCapacity(0);
@@ -254,7 +255,7 @@ public class PumpBlockEntity extends DiggingBaseBlockEntity implements IFluidHan
 			if (drain(emptyAmount, FluidAction.SIMULATE).getAmount() == emptyAmount && emptyAmount > 0) {
 				if (outputItems[0].isEmpty()) {
 					ItemStack resultStack = iFluidHandlerItemInput.getContainer().copy();
-					IFluidHandlerItem newIFluidHandlerOutput = resultStack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).orElse(null);
+					IFluidHandlerItem newIFluidHandlerOutput = (IFluidHandlerItem) resultStack.getCapability(ForgeCapabilities.FLUID_HANDLER).orElse(null);
 					if (newIFluidHandlerOutput != null) {
 						iFluidHandlerItemInput.getContainer().shrink(1);
 						newIFluidHandlerOutput.getContainer().setCount(1);
@@ -266,7 +267,7 @@ public class PumpBlockEntity extends DiggingBaseBlockEntity implements IFluidHan
 					int itemCapacityOutput = iFluidHandlerItemOutput.getTankCapacity(0);
 					boolean filledOutput = iFluidHandlerItemOutput.getFluidInTank(0).getAmount() == itemCapacityOutput;
 					boolean fluidMatch = iFluidHandlerItemOutput.getFluidInTank(0).isFluidEqual(fluidStack);
-					boolean sameItem = iFluidHandlerItemOutput.getContainer().sameItem(iFluidHandlerItemInput.getContainer());
+					boolean sameItem = iFluidHandlerItemOutput.getContainer().areShareTagsEqual(iFluidHandlerItemInput.getContainer());
 					boolean sameCapacity = (itemCapacityInput == itemCapacityOutput);
 					boolean stackFull = iFluidHandlerItemOutput.getContainer().getCount() >= iFluidHandlerItemOutput.getContainer().getMaxStackSize();
 					if (sameItem && fluidMatch && filledOutput && sameCapacity && !stackFull) {

@@ -13,13 +13,12 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.util.FakePlayer;
 
 public class NukeBlock extends Block {
 	public NukeBlock() {
-		super(Properties.of(Material.EXPLOSIVE).instabreak().sound(SoundType.GRASS));
+		super(Properties.of().instabreak().sound(SoundType.GRASS));
 	}
 
 	@Override
@@ -31,7 +30,7 @@ public class NukeBlock extends Block {
 			NuclearExplosion.builder((ServerLevel) level, pos, FTBICConfig.NUCLEAR.NUKE_RADIUS.get(), player.getUUID(), player.getScoreboardName())
 					.delay(10000L)
 					.preExplosion(() -> {
-						level.getServer().getPlayerList().broadcastSystemMessage(Component.translatable("block.ftbic.nuke.broadcast", player.getDisplayName()), ChatType.SYSTEM);
+						level.getServer().getPlayerList().broadcastSystemMessage(Component.translatable("block.ftbic.nuke.broadcast", player.getDisplayName()), true);
 						level.removeBlock(pos, false);
 					})
 					.create()

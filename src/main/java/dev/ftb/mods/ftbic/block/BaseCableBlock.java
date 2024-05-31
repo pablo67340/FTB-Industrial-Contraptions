@@ -13,7 +13,6 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -39,7 +38,7 @@ public class BaseCableBlock extends Block implements SimpleWaterloggedBlock {
 	public final VoxelShape[] shapes;
 
 	public BaseCableBlock(int b, SoundType soundType) {
-		super(Properties.of(Material.METAL).strength(0.9F).sound(soundType));
+		super(Properties.of().strength(0.9F).sound(soundType));
 		border = b;
 		int B0 = border;
 		int B1 = 16 - border;

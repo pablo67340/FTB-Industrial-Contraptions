@@ -1,15 +1,14 @@
 package dev.ftb.mods.ftbic.kubejs;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import dev.ftb.mods.ftbic.util.FTBICUtils;
 import dev.latvian.mods.kubejs.fluid.FluidStackJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientStackJS;
-import dev.latvian.mods.kubejs.recipe.RecipeArguments;
+
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.util.ListJS;
+import net.minecraft.world.item.crafting.Recipe;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,8 +17,13 @@ public class MachineRecipeJS extends RecipeJS {
 	public List<FluidStackJS> inputFluids = new ArrayList<>();
 	public List<FluidStackJS> outputFluids = new ArrayList<>();
 
+	public List<IngredientJS> inputItems = new ArrayList<>();
+
+	public List<IngredientJS> outputItems = new ArrayList<>();
+
+
 	@Override
-	public void create(RecipeArguments args) {
+	public @Nullable Recipe<?> createRecipe() {
 		for (Object o : ListJS.orSelf(args.get(0))) {
 			if (o instanceof FluidStackJS) {
 				outputFluids.add((FluidStackJS) o);
@@ -35,10 +39,11 @@ public class MachineRecipeJS extends RecipeJS {
 				inputItems.add(parseIngredientItem(o).asIngredientStack());
 			}
 		}
+		return null;
 	}
 
 	@Override
-	public void deserialize() {
+	public void deserialize(boolean merge) {
 		inputItems.addAll(FTBICUtils.listFromJson(json, "inputItems", json -> parseIngredientItem(json).asIngredientStack()));
 		inputFluids.addAll(FTBICUtils.listFromJson(json, "inputFluids", FluidStackJS::fromJson));
 		outputItems.addAll(FTBICUtils.listFromJson(json, "outputItems", this::parseResultItem));
@@ -57,13 +62,5 @@ public class MachineRecipeJS extends RecipeJS {
 		json.addProperty("processingTime", p);
 		save();
 		return this;
-	}
-
-	@Override
-	public JsonElement serializeIngredientStack(IngredientStackJS in) {
-		JsonObject o = new JsonObject();
-		o.add("ingredient", in.ingredient.toJson());
-		o.addProperty("count", in.getCount());
-		return o;
 	}
 }

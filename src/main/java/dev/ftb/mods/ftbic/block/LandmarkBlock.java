@@ -1,6 +1,6 @@
 package dev.ftb.mods.ftbic.block;
 
-import com.mojang.math.Vector3f;
+
 import dev.ftb.mods.ftbic.block.entity.machine.DiggingBaseBlockEntity;
 import dev.ftb.mods.ftbic.util.FTBICUtils;
 import net.minecraft.core.BlockPos;
@@ -25,16 +25,18 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.level.material.Material;
+
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
 public class LandmarkBlock extends TorchBlock implements SimpleWaterloggedBlock {
 	public LandmarkBlock() {
-		super(Properties.of(Material.WOOD).strength(0.1F).sound(SoundType.WOOD).noCollission().noOcclusion().lightLevel(value -> 8), new DustParticleOptions(new Vector3f(Vec3.fromRGB24(0x0000FF)), 1F));
+		super(Properties.of().strength(0.1F).sound(SoundType.WOOD).noCollission().noOcclusion().lightLevel(value -> 8), new DustParticleOptions(new Vector3f((Vector3fc) Vec3.fromRGB24(0x0000FF)), 1F));
 
 		registerDefaultState(getStateDefinition().any().setValue(BlockStateProperties.WATERLOGGED, false));
 	}

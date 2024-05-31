@@ -2,11 +2,12 @@ package dev.ftb.mods.ftbic.kubejs;
 
 import dev.ftb.mods.ftbic.recipe.FTBICRecipes;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
-import dev.latvian.mods.kubejs.recipe.RegisterRecipeHandlersEvent;
+import dev.latvian.mods.kubejs.recipe.schema.RegisterRecipeSchemasEvent;
+
 
 public class FTBICKubeJSPlugin extends KubeJSPlugin {
 	@Override
-	public void addRecipes(RegisterRecipeHandlersEvent event) {
+	public void addRecipes(RegisterRecipeSchemasEvent event) {
 		event.register(FTBICRecipes.SMELTING.getId(), MachineRecipeJS::new);
 		event.register(FTBICRecipes.MACERATING.getId(), MachineRecipeJS::new);
 		event.register(FTBICRecipes.SEPARATING.getId(), MachineRecipeJS::new);

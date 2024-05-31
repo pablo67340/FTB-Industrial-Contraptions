@@ -33,7 +33,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -47,7 +46,7 @@ public class ElectricBlock extends Block implements EntityBlock, SprayPaintable 
 	public final ElectricBlockInstance electricBlockInstance;
 
 	public ElectricBlock(ElectricBlockInstance m) {
-		super(Properties.of(Material.METAL).strength(3.5F).sound(SoundType.METAL).requiresCorrectToolForDrops());
+		super(Properties.of().strength(3.5F).sound(SoundType.METAL).requiresCorrectToolForDrops());
 		electricBlockInstance = m;
 		BlockState state = getStateDefinition().any().setValue(SprayPaintable.DARK, false);
 

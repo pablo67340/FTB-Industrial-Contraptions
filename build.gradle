@@ -93,9 +93,11 @@ dependencies {
 	modImplementation("dev.ftb.mods:ftb-teams-forge:${rootProject.ftbteams_version}") { transitive false }
 	modImplementation("dev.ftb.mods:ftb-chunks-forge:${rootProject.ftbchunks_version}") { transitive false }
 
-	// provides the JEI API, so we're good to go
-	modLocalRuntime modImplementation("me.shedaniel:RoughlyEnoughItems-forge:${rootProject.rei_version}")
-	modLocalRuntime modCompileOnly("me.shedaniel:RoughlyEnoughItems-plugin-compatibilities-forge:${rootProject.rei_version}")
+	// compile against the JEI API but do not include it at runtime
+	modApi("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
+	modApi("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
+	// at runtime, use the full JEI jar for Forge
+	modImplementation("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
 
 	modApi "vazkii.patchouli:Patchouli:${patchouli_version}:api"
 	modRuntimeOnly "vazkii.patchouli:Patchouli:${patchouli_version}"

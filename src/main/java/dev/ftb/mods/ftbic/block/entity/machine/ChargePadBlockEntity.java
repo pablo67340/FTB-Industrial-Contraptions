@@ -12,7 +12,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.items.CapabilityItemHandler;
+
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.IItemHandler;
 
 public class ChargePadBlockEntity extends ElectricBlockEntity {
@@ -23,7 +24,7 @@ public class ChargePadBlockEntity extends ElectricBlockEntity {
 	@Override
 	public void stepOn(ServerPlayer player) {
 		if (energy > 0D) {
-			IItemHandler handler = player.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
+			IItemHandler handler = player.getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(null);
 
 			if (handler != null) {
 				for (int i = 0; i < handler.getSlots(); i++) {

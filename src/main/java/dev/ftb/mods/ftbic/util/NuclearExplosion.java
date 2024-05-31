@@ -19,7 +19,6 @@ import net.minecraft.world.level.block.FireBlock;
 import net.minecraft.world.level.block.GrassBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.level.material.Material;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.util.FakePlayer;
 
@@ -472,7 +471,7 @@ public class NuclearExplosion extends Thread implements Comparator<NuclearExplos
 					} else if (state.is(BlockTags.DIRT)) {
 						tasks.add(new BlockModification(p, coarseDirt));
 						tasks.add(new LightUpdate(p, state, coarseDirt, oldLight, oldOpacity));
-					} else if (state.getMaterial() == Material.STONE || state.is(Tags.Blocks.GRAVEL) || state.is(Tags.Blocks.SAND)) {
+					} else if (state.getBlock() == Blocks.STONE || state.is(Tags.Blocks.GRAVEL) || state.is(Tags.Blocks.SAND)) {
 						if (random.nextInt(10) == 0) {
 							BlockState burnt = getBurntBlock(random);
 							tasks.add(new BlockModification(p, burnt));
@@ -490,7 +489,7 @@ public class NuclearExplosion extends Thread implements Comparator<NuclearExplos
 							tasks.add(new BlockModification(p, cobble));
 							tasks.add(new LightUpdate(p, state, cobble, oldLight, oldOpacity));
 						}
-					} else if (state.getMaterial().isLiquid() || level.getFluidState(p).getType() != Fluids.EMPTY) {
+					} else if (state.liquid() || level.getFluidState(p).getType() != Fluids.EMPTY) {
 						tasks.add(new BlockModification(p, exfluid));
 						tasks.add(new LightUpdate(p, state, exfluid, oldLight, oldOpacity));
 					} else {

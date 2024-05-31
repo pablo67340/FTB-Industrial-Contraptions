@@ -22,7 +22,8 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.energy.CapabilityEnergy;
+
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.energy.IEnergyStorage;
 import org.jetbrains.annotations.Nullable;
 
@@ -66,7 +67,7 @@ public class CableBlock extends BaseCableBlock {
 			if(be instanceof EnergyHandler) {
 				return true;
 			} else if (be != null && FTBICConfig.ENERGY.ZAP_TO_FE_CONVERSION_RATE.get() > 0D) {
-				return be.getCapability(CapabilityEnergy.ENERGY, face).filter(IEnergyStorage::canReceive).isPresent();
+				return be.getCapability(ForgeCapabilities.ENERGY, face).filter(IEnergyStorage::canReceive).isPresent();
 			}
 		}
 

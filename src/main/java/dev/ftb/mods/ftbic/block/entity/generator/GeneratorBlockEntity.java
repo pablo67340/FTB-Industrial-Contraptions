@@ -20,8 +20,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 
 import java.util.HashSet;
@@ -231,7 +231,7 @@ public class GeneratorBlockEntity extends ElectricBlockEntity {
 					return;
 				}
 
-				LazyOptional<IEnergyStorage> energyCap = entity.getCapability(CapabilityEnergy.ENERGY, direction.getOpposite());
+				LazyOptional<IEnergyStorage> energyCap = entity.getCapability(ForgeCapabilities.ENERGY, direction.getOpposite());
 				IEnergyStorage feStorage = energyCap.orElse(null);
 
 				if (feStorage != null && feStorage.canReceive()) {

@@ -9,12 +9,12 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
+
 import org.jetbrains.annotations.Nullable;
 
 public class IronFurnaceBlock extends FurnaceBlock {
 	public IronFurnaceBlock() {
-		super(Properties.of(Material.STONE).requiresCorrectToolForDrops().strength(3.5F).lightLevel(value -> value.getValue(LIT) ? 13 : 0));
+		super(Properties.of().requiresCorrectToolForDrops().strength(3.5F).lightLevel(value -> value.getValue(LIT) ? 13 : 0));
 	}
 
 	@Override

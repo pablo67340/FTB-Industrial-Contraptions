@@ -8,8 +8,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.GlassBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -24,10 +22,10 @@ public interface FTBICBlocks {
 	DeferredRegister<Block> REGISTRY = DeferredRegister.create(ForgeRegistries.BLOCKS, FTBIC.MOD_ID);
 
 	Supplier<Block> RUBBER_SHEET = REGISTRY.register("rubber_sheet", RubberSheetBlock::new);
-	Supplier<Block> REINFORCED_STONE = REGISTRY.register("reinforced_stone", () -> new Block(BlockBehaviour.Properties.of(Material.STONE).sound(SoundType.STONE).strength(10F, 10000000000F).requiresCorrectToolForDrops()));
-	Supplier<Block> REINFORCED_GLASS = REGISTRY.register("reinforced_glass", () -> new GlassBlock(BlockBehaviour.Properties.of(Material.STONE).sound(SoundType.GLASS).strength(10F, 10000000000F).requiresCorrectToolForDrops().noOcclusion()));
-	Supplier<Block> MACHINE_BLOCK = REGISTRY.register("machine_block", () -> new Block(BlockBehaviour.Properties.of(Material.METAL).sound(SoundType.METAL).strength(5F, 6F).requiresCorrectToolForDrops()));
-	Supplier<Block> ADVANCED_MACHINE_BLOCK = REGISTRY.register("advanced_machine_block", () -> new Block(BlockBehaviour.Properties.of(Material.METAL).sound(SoundType.METAL).strength(5F, 6F).requiresCorrectToolForDrops()));
+	Supplier<Block> REINFORCED_STONE = REGISTRY.register("reinforced_stone", () -> new Block(BlockBehaviour.Properties.of().sound(SoundType.STONE).strength(10F, 10000000000F).requiresCorrectToolForDrops()));
+	Supplier<Block> REINFORCED_GLASS = REGISTRY.register("reinforced_glass", () -> new GlassBlock(BlockBehaviour.Properties.of().sound(SoundType.GLASS).strength(10F, 10000000000F).requiresCorrectToolForDrops().noOcclusion()));
+	Supplier<Block> MACHINE_BLOCK = REGISTRY.register("machine_block", () -> new Block(BlockBehaviour.Properties.of().sound(SoundType.METAL).strength(5F, 6F).requiresCorrectToolForDrops()));
+	Supplier<Block> ADVANCED_MACHINE_BLOCK = REGISTRY.register("advanced_machine_block", () -> new Block(BlockBehaviour.Properties.of().sound(SoundType.METAL).strength(5F, 6F).requiresCorrectToolForDrops()));
 	Supplier<Block> IRON_FURNACE = REGISTRY.register("iron_furnace", IronFurnaceBlock::new);
 	Supplier<Block> LV_CABLE = REGISTRY.register("lv_cable", () -> new CableBlock(EnergyTier.LV, 5, SoundType.WOOL));
 	Supplier<Block> MV_CABLE = REGISTRY.register("mv_cable", () -> new CableBlock(EnergyTier.MV, 4, SoundType.WOOL));
@@ -39,10 +37,10 @@ public interface FTBICBlocks {
 	Supplier<Block> EXFLUID = REGISTRY.register("exfluid", ExFluidBlock::new);
 	Supplier<Block> NUCLEAR_REACTOR_CHAMBER = REGISTRY.register("nuclear_reactor_chamber", NuclearReactorChamberBlock::new);
 	Supplier<Block> NUKE = REGISTRY.register("nuke", NukeBlock::new);
-	Supplier<Block> ACTIVE_NUKE = REGISTRY.register("active_nuke", () -> new Block(BlockBehaviour.Properties.of(Material.EXPLOSIVE).sound(SoundType.GRASS).strength(-1F, 10000000000F)));
+	Supplier<Block> ACTIVE_NUKE = REGISTRY.register("active_nuke", () -> new Block(BlockBehaviour.Properties.of().sound(SoundType.GRASS).strength(-1F, 10000000000F)));
 
 	List<Supplier<Block>> CABLES = Arrays.asList(LV_CABLE, MV_CABLE, HV_CABLE, EV_CABLE, IV_CABLE, BURNT_CABLE);
 
 	Map<ResourceElements, Supplier<Block>> RESOURCE_ORES = ResourceElements.VALUES.stream().filter(e -> e.requirements().has(ResourceType.ORE)).collect(Collectors.toMap(Function.identity(), e -> REGISTRY.register(e.getName() + "_ore", () -> new ResourceBlock(e.getName().contains("deepslate")))));
-	Map<ResourceElements, Supplier<Block>> RESOURCE_BLOCKS_OF = ResourceElements.VALUES.stream().filter(e -> e.requirements().has(ResourceType.BLOCK)).collect(Collectors.toMap(Function.identity(), e -> REGISTRY.register(e.getName() + "_block", () -> new Block(BlockBehaviour.Properties.of(Material.METAL, MaterialColor.METAL).requiresCorrectToolForDrops().strength(5.0f, 6.0f).sound(SoundType.METAL)))));
+	Map<ResourceElements, Supplier<Block>> RESOURCE_BLOCKS_OF = ResourceElements.VALUES.stream().filter(e -> e.requirements().has(ResourceType.BLOCK)).collect(Collectors.toMap(Function.identity(), e -> REGISTRY.register(e.getName() + "_block", () -> new Block(BlockBehaviour.Properties.of().requiresCorrectToolForDrops().strength(5.0f, 6.0f).sound(SoundType.METAL)))));
 }

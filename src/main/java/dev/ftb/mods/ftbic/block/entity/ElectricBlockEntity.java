@@ -38,8 +38,9 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
+
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -93,7 +94,7 @@ public class ElectricBlockEntity extends BlockEntity implements EnergyHandler, I
 		Arrays.fill(outputItems, ItemStack.EMPTY);
 
 		if (inputItems.length + outputItems.length > 127) {
-			throw new RuntimeException("Internal inventory of " + Registry.BLOCK_ENTITY_TYPE.getKey(getType()) + " too large!");
+			throw new RuntimeException("Internal inventory of " + getType() + " too large!");
 		}
 
 		thisOptional = null;
@@ -237,7 +238,7 @@ public class ElectricBlockEntity extends BlockEntity implements EnergyHandler, I
 	@NotNull
 	@Override
 	public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-		if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && (inputItems.length + outputItems.length) > 0) {
+		if (cap == ForgeCapabilities.ITEM_HANDLER && (inputItems.length + outputItems.length) > 0) {
 			return getThisOptional().cast();
 		}
 
@@ -579,7 +580,7 @@ public class ElectricBlockEntity extends BlockEntity implements EnergyHandler, I
 			if (!outputItems[i].isEmpty()) {
 				for (Direction direction : (directions == null ? (directions = getEjectDirections()) : directions)) {
 					BlockEntity entity = level.getBlockEntity(worldPosition.relative(direction));
-					IItemHandler itemHandler = entity == null ? null : entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.getOpposite()).orElse(null);
+					IItemHandler itemHandler = entity == null ? null : entity.getCapability(ForgeCapabilities.ITEM_HANDLER, direction.getOpposite()).orElse(null);
 
 					if (itemHandler != null) {
 						outputItems[i] = ItemHandlerHelper.insertItemStacked(itemHandler, outputItems[i].copy(), false);

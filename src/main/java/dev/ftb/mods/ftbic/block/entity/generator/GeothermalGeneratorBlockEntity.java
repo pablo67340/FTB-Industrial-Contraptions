@@ -13,9 +13,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -60,7 +61,7 @@ public class GeothermalGeneratorBlockEntity extends GeneratorBlockEntity {
 
 	@Override
 	public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-		return cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY ? getTankOptional().cast() : super.getCapability(cap, side);
+		return cap == ForgeCapabilities.FLUID_HANDLER ? getTankOptional().cast() : super.getCapability(cap, side);
 	}
 
 	@Override
